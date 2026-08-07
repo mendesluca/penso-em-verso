@@ -17,7 +17,7 @@ export default async function CategoriaPage({ params }: { params: Promise<{ slug
   const { data: poems } = await supabase
     .from("poems")
     .select(
-      "slug, title, excerpt, reading_time_seconds, published_at, author:profiles(username, display_name)",
+      "slug, title, excerpt, reading_time_seconds, published_at, author:profiles!poems_author_id_fkey(username, display_name)",
     )
     .eq("status", "published")
     .eq("category_id", category.id)

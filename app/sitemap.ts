@@ -7,7 +7,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const { data: poems } = await supabase
     .from("poems")
-    .select("slug, updated_at, author:profiles(username)")
+    .select("slug, updated_at, author:profiles!poems_author_id_fkey(username)")
     .eq("status", "published");
 
   const { data: profiles } = await supabase.from("profiles").select("username, updated_at");

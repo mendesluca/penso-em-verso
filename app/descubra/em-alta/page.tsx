@@ -9,7 +9,7 @@ export default async function EmAltaPage() {
   const { data: poems } = await supabase
     .from("poems")
     .select(
-      "slug, title, excerpt, reading_time_seconds, published_at, view_count, author:profiles(username, display_name)",
+      "slug, title, excerpt, reading_time_seconds, published_at, view_count, author:profiles!poems_author_id_fkey(username, display_name)",
     )
     .eq("status", "published")
     .order("view_count", { ascending: false })

@@ -18,7 +18,7 @@ export default async function SentimentoPage({ params }: { params: Promise<{ slu
   const { data: rows } = await supabase
     .from("poem_tags")
     .select(
-      "poem:poems!inner(slug, title, excerpt, reading_time_seconds, published_at, status, author:profiles(username, display_name))",
+      "poem:poems!inner(slug, title, excerpt, reading_time_seconds, published_at, status, author:profiles!poems_author_id_fkey(username, display_name))",
     )
     .eq("tag_id", tag.id)
     .eq("poem.status", "published");

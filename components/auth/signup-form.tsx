@@ -12,6 +12,15 @@ const initialState: ActionState = { error: null };
 export function SignupForm() {
   const [state, formAction, pending] = useActionState(signUp, initialState);
 
+  if (state.info) {
+    return (
+      <div className="flex flex-col gap-3 rounded-md border border-border p-6 text-center">
+        <p className="font-serif text-lg">Quase lá</p>
+        <p className="text-sm text-muted-foreground">{state.info}</p>
+      </div>
+    );
+  }
+
   return (
     <form action={formAction} className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">

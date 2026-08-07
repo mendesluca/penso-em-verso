@@ -11,7 +11,7 @@ async function getPoem(username: string, slug: string) {
   const { data } = await supabase
     .from("poems")
     .select(
-      "id, title, content, excerpt, reading_time_seconds, published_at, author:profiles!inner(id, username, display_name, bio)",
+      "id, title, content, excerpt, reading_time_seconds, published_at, author:profiles!poems_author_id_fkey!inner(id, username, display_name, bio)",
     )
     .eq("slug", slug)
     .eq("status", "published")
