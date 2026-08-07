@@ -29,16 +29,27 @@ export default async function ColecoesPage() {
       {collections && collections.length > 0 && (
         <div className="flex flex-col gap-2">
           {collections.map((c) => (
-            <Link
+            <div
               key={c.id}
-              href={`/@${profile?.username}/colecoes/${c.slug}`}
-              className="flex items-center justify-between border-b border-border py-3 hover:text-primary"
+              className="flex items-center justify-between border-b border-border py-3"
             >
-              <span className="font-serif text-lg">{c.title}</span>
-              <span className="font-mono text-xs text-muted-foreground">
-                {c.is_public ? "pública" : "privada"}
-              </span>
-            </Link>
+              <Link href={`/dashboard/colecoes/${c.id}`} className="font-serif text-lg hover:text-primary">
+                {c.title}
+              </Link>
+              <div className="flex items-center gap-3">
+                <Link
+                  href={`/@${profile?.username}/colecoes/${c.slug}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-mono text-xs text-muted-foreground hover:text-primary"
+                >
+                  Ver página ↗
+                </Link>
+                <span className="font-mono text-xs text-muted-foreground">
+                  {c.is_public ? "pública" : "privada"}
+                </span>
+              </div>
+            </div>
           ))}
         </div>
       )}

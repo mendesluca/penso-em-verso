@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatReadingTime } from "@/lib/text/poem";
 import { PoemActions } from "@/components/poem/poem-actions";
 import { CommentForm } from "@/components/poem/comment-form";
+import { ViewTracker } from "@/components/poem/view-tracker";
 
 async function getPoem(username: string, slug: string) {
   const supabase = await createClient();
@@ -59,6 +60,7 @@ export default async function PoemPage({
 
   const author = Array.isArray(poem.author) ? poem.author[0] : poem.author;
   const poemPath = `/@${username}/${slug}`;
+  const isOwnPoem = user?.id === author.id;
 
   const [{ count: likeCount }, { data: myLike }, { data: myFavorite }, { data: comments }] =
     await Promise.all([
@@ -84,6 +86,7 @@ export default async function PoemPage({
 
   return (
     <article className="mx-auto max-w-2xl px-6 py-16">
+      {!isOwnPoem && <ViewTracker poemId={poem.id} />}
       <p className="mb-3 font-mono text-xs uppercase tracking-wide text-muted-foreground">
         {poem.published_at &&
           new Date(poem.published_at).toLocaleDateString("pt-BR", {

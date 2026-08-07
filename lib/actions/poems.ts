@@ -199,3 +199,13 @@ export async function toggleFollow(targetUserId: string, profilePath: string) {
 
   revalidatePath(profilePath);
 }
+
+// Chamado por <ViewTracker> num useEffect client-side (uma vez por visita real à página),
+// nunca a partir do render da página em si — colocar a contagem no corpo do Server
+// Component fazia ela disparar de novo a cada revalidatePath (curtir, favoritar, comentar),
+// inflando o view_count em toda interação. Sem revalidatePath aqui de propósito: a
+// contagem só aparece na tela de estatísticas do autor, não na própria página do poema.
+export async function recordPoemView(poemId: string) {
+  const supabase = await createClient();
+  await supabase.rpc("increment_poem_view", { poem_id: poemId });
+}

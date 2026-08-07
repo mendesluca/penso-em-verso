@@ -4,10 +4,14 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { signOut } from "@/lib/actions/auth";
 
 const links = [
+  { href: "/dashboard", label: "Painel" },
   { href: "/dashboard/novo-poema", label: "Novo poema" },
   { href: "/dashboard/poemas", label: "Meus poemas" },
   { href: "/dashboard/rascunhos", label: "Rascunhos" },
+  { href: "/dashboard/estatisticas", label: "Estatísticas" },
   { href: "/dashboard/colecoes", label: "Coleções" },
+  { href: "/dashboard/curtidos", label: "Curtidos" },
+  { href: "/dashboard/salvos", label: "Salvos" },
   { href: "/dashboard/perfil", label: "Perfil" },
   { href: "/dashboard/configuracoes", label: "Configurações" },
 ];

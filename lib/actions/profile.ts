@@ -68,3 +68,38 @@ export async function createCollection(_prevState: ActionState, formData: FormDa
   revalidatePath("/dashboard/colecoes");
   return { error: null };
 }
+
+export async function addPoemToCollection(collectionId: string, poemId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { count } = await supabase
+    .from("collection_poems")
+    .select("poem_id", { count: "exact", head: true })
+    .eq("collection_id", collectionId);
+
+  await supabase
+    .from("collection_poems")
+    .insert({ collection_id: collectionId, poem_id: poemId, position: count ?? 0 });
+
+  revalidatePath(`/dashboard/colecoes/${collectionId}`);
+}
+
+export async function removePoemFromCollection(collectionId: string, poemId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  await supabase
+    .from("collection_poems")
+    .delete()
+    .eq("collection_id", collectionId)
+    .eq("poem_id", poemId);
+
+  revalidatePath(`/dashboard/colecoes/${collectionId}`);
+}
