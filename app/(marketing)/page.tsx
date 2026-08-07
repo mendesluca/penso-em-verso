@@ -6,6 +6,10 @@ import { PoemCard, type PoemCardData } from "@/components/poem/poem-card";
 export default async function LandingPage() {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const { data: poems } = await supabase
     .from("poems")
     .select(
@@ -39,7 +43,9 @@ export default async function LandingPage() {
           </p>
           <div className="flex gap-3">
             <Button size="lg" asChild>
-              <Link href="/cadastro">Comece a escrever</Link>
+              <Link href={user ? "/dashboard/novo-poema" : "/cadastro"}>
+                {user ? "Escrever um poema" : "Comece a escrever"}
+              </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
               <Link href="/descubra">Descobrir poemas</Link>
@@ -100,10 +106,21 @@ export default async function LandingPage() {
       </section>
 
       <section className="border-t border-border py-16 text-center">
-        <h2 className="mb-3 font-serif text-2xl">Sua obra merece um lar permanente.</h2>
-        <Button size="lg" asChild>
-          <Link href="/cadastro">Criar minha conta</Link>
-        </Button>
+        {user ? (
+          <>
+            <h2 className="mb-3 font-serif text-2xl">Continue construindo seu acervo.</h2>
+            <Button size="lg" asChild>
+              <Link href="/dashboard">Ir para o painel</Link>
+            </Button>
+          </>
+        ) : (
+          <>
+            <h2 className="mb-3 font-serif text-2xl">Sua obra merece um lar permanente.</h2>
+            <Button size="lg" asChild>
+              <Link href="/cadastro">Criar minha conta</Link>
+            </Button>
+          </>
+        )}
       </section>
     </div>
   );
