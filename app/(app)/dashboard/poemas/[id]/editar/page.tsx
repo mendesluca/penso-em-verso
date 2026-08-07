@@ -14,15 +14,18 @@ export default async function EditarPoemaPage({ params }: { params: Promise<{ id
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [{ data: poem }, { data: categories }] = await Promise.all([
-    supabase
-      .from("poems")
-      .select("id, title, content, category_id, status")
-      .eq("id", id)
-      .eq("author_id", user.id)
-      .single(),
-    supabase.from("categories").select("id, name").order("name"),
-  ]);
+  const [{ data: poem }, { data: categories }, { data: sentiments }, { data: poemTags }] =
+    await Promise.all([
+      supabase
+        .from("poems")
+        .select("id, title, content, category_id, status")
+        .eq("id", id)
+        .eq("author_id", user.id)
+        .single(),
+      supabase.from("categories").select("id, name").order("name"),
+      supabase.from("tags").select("id, name").eq("type", "sentimento").order("name"),
+      supabase.from("poem_tags").select("tag_id").eq("poem_id", id),
+    ]);
 
   if (!poem) notFound();
 
@@ -42,11 +45,13 @@ export default async function EditarPoemaPage({ params }: { params: Promise<{ id
       <PoemEditor
         action={boundUpdate}
         categories={categories ?? []}
+        sentiments={sentiments ?? []}
         initialValues={{
           title: poem.title,
           content: poem.content,
           category_id: poem.category_id,
           status: poem.status,
+          tagIds: (poemTags ?? []).map((t) => t.tag_id),
         }}
       />
     </div>

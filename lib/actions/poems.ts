@@ -41,12 +41,24 @@ async function uniqueSlugFor(
   }
 }
 
+async function syncPoemTags(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  poemId: string,
+  tagIds: string[],
+) {
+  await supabase.from("poem_tags").delete().eq("poem_id", poemId);
+  if (tagIds.length > 0) {
+    await supabase.from("poem_tags").insert(tagIds.map((tag_id) => ({ poem_id: poemId, tag_id })));
+  }
+}
+
 export async function createPoem(_prevState: ActionState, formData: FormData): Promise<ActionState> {
   const { supabase, user } = await requireUser();
 
   const title = String(formData.get("title") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
   const categoryId = String(formData.get("category_id") ?? "") || null;
+  const tagIds = formData.getAll("tags").map(String);
   const publish = formData.get("intent") === "publish";
 
   if (!title || !content) return { error: "Título e conteúdo são obrigatórios." };
@@ -71,6 +83,8 @@ export async function createPoem(_prevState: ActionState, formData: FormData): P
 
   if (error || !poem) return { error: "Não foi possível salvar o poema." };
 
+  await syncPoemTags(supabase, poem.id, tagIds);
+
   revalidatePath("/dashboard/poemas");
   redirect(`/dashboard/poemas/${poem.id}/editar`);
 }
@@ -85,6 +99,7 @@ export async function updatePoem(
   const title = String(formData.get("title") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
   const categoryId = String(formData.get("category_id") ?? "") || null;
+  const tagIds = formData.getAll("tags").map(String);
   const intent = formData.get("intent");
 
   if (!title || !content) return { error: "Título e conteúdo são obrigatórios." };
@@ -117,6 +132,8 @@ export async function updatePoem(
     .eq("id", poemId);
 
   if (error) return { error: "Não foi possível salvar as alterações." };
+
+  await syncPoemTags(supabase, poemId, tagIds);
 
   revalidatePath("/dashboard/poemas");
   revalidatePath(`/dashboard/poemas/${poemId}/editar`);

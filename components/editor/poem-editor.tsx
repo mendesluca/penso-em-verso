@@ -18,11 +18,17 @@ export interface PoemEditorCategory {
   name: string;
 }
 
+export interface PoemEditorTag {
+  id: string;
+  name: string;
+}
+
 export interface PoemEditorInitialValues {
   title: string;
   content: string;
   category_id: string | null;
   status: "draft" | "published";
+  tagIds?: string[];
 }
 
 type ActionState = { error: string | null };
@@ -31,10 +37,12 @@ type PoemFormAction = (state: ActionState, formData: FormData) => Promise<Action
 export function PoemEditor({
   action,
   categories,
+  sentiments,
   initialValues,
 }: {
   action: PoemFormAction;
   categories: PoemEditorCategory[];
+  sentiments: PoemEditorTag[];
   initialValues?: PoemEditorInitialValues;
 }) {
   const [state, formAction, pending] = useActionState<ActionState, FormData>(action, {
@@ -89,6 +97,31 @@ export function PoemEditor({
           </SelectContent>
         </Select>
       </div>
+
+      {sentiments.length > 0 && (
+        <div className="flex flex-col gap-1.5">
+          <Label className="font-mono text-xs uppercase tracking-wide">
+            Sentimento (opcional, ajuda na descoberta)
+          </Label>
+          <div className="flex flex-wrap gap-2">
+            {sentiments.map((tag) => (
+              <label
+                key={tag.id}
+                className="cursor-pointer rounded-full border border-border px-3 py-1 font-mono text-xs has-[:checked]:border-primary has-[:checked]:bg-accent has-[:checked]:text-primary"
+              >
+                <input
+                  type="checkbox"
+                  name="tags"
+                  value={tag.id}
+                  defaultChecked={initialValues?.tagIds?.includes(tag.id)}
+                  className="sr-only"
+                />
+                {tag.name}
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
 
       {state.error && <p className="text-sm text-destructive">{state.error}</p>}
 
